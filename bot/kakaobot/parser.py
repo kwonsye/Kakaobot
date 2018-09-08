@@ -4,6 +4,59 @@ from bs4 import BeautifulSoup
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE","bot.settings")
 #import django
 #django.setup()
+def prostitution_support():
+	req=requests.get('https://www.women1366.kr/_sub03/sub03_01c.html')
+	html=req.text
+	soup=BeautifulSoup(html,'html.parser')
+	supports=soup.select('div.page > table')
+	#print(len(supports))
+	table=supports[1]
+
+	tbody=table.find('tbody')
+	trs=tbody.find_all('tr')
+
+	data=""
+	for tr in trs:
+		nation=tr.find('th')
+		data+=("*"+nation.text+"  ")
+		call=tr.find('td')
+		data+=(call.text+"\n")
+	return data
+	
+
+def domestic_support():
+	req=requests.get('https://www.women1366.kr/_sub03/sub03_01a.html')
+	html=req.text
+	soup=BeautifulSoup(html,'html.parser')
+	supports=soup.select('table > tbody > tr')
+
+	data=""
+	for support in supports:
+		th=support.find('th')
+		data+=("*"+th.text+"\n")
+		td=support.find('td')
+		data+=(td.text+"\n")
+	return data
+	
+def panre_crawler(input_search):
+	url='https://casenote.kr/search/'
+	#panre_dict=OrederDict()
+	
+	data=''
+	for page in range(1,5):
+		params={
+			'q':input_search,
+			'p':page,
+		}
+		req=requests.get(url,params=params)
+		html=req.text
+		soup=BeautifulSoup(html,'html.parser')
+		title_list=soup.select('.casename')
+
+		for title in title_list:
+			data+=title.text+'\n'+title['href']+'\n'
+
+	return data
 
 def parse_domestic(area):	
 	req=requests.get('https://www.women1366.kr/_sub03/sub03_02b.html')
@@ -207,6 +260,6 @@ def parse_sex(area):
 		
 
 if __name__=='__main__':
-	result=parse_sex('서울')
+	result=prostitution_support()
 	print(result)
 #	parse_domestic()

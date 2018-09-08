@@ -13,14 +13,76 @@ from random import *
 def keyboard(request):
 	return JsonResponse({
 		'type':'buttons',
-		'buttons':['가정폭력','성폭력','피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호']
+		'buttons':['가정폭력','성폭력','여성폭력 피해자 지원정책','피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호']
 })
 
 @csrf_exempt
 def message(request):
 	message=((request.body).decode('utf-8'))
-	receivedJsonData=json.loads(message)
-	content=receivedJsonData['content']
+	received_json_data=json.loads(message)
+	content=received_json_data['content']
+	
+	if content=='여성폭력 피해자 지원정책':
+		return JsonResponse({
+			'message':{
+				'text':'1.가정폭력 피해자 지원정책\n2.성폭력 피해자 지원정책\n3.성매매 피해자 지원정책\n*원하는 항목을 선택하세요.'
+},
+			'keyboard':{
+				'type':'buttons',
+				'buttons':['가정폭력 피해자 지원정책','성폭력 피해자 지원정책','성매매 피해자 지원정책']
+}
+			
+})
+	if content=='가정폭력 피해자 지원정책':
+		data=domestic_support()
+		return JsonResponse({
+			'message':{
+				'text':data,
+				'photo':{
+					'url':'https://www.women1366.kr/_sub03/img/img0301_04.jpg',
+					'width':850,
+					'height':1151
+}
+},
+			'keyboard':{
+				'type':'buttons',
+				'buttons':['가정폭력 피해자 지원정책','성폭력 피해자 지원정책','성매매 피해자 지원정책','처음으로']
+}
+			
+})
+	if content=='성폭력 피해자 지원정책':
+		return JsonResponse({
+			'message':{
+				'text':'*성폭력 발생 시 가장 중요한 일은 경찰에 신고 하는 것입니다.\n신고와 동시에 피해자에 대한 보호 조치가 시작됩니다.\n\n1. 전문기관에 상담 및 신고상담\n1366, 신고 112, 성폭력피해상담소,피해자를 위한 변호사 지정 및 상담,무료법률구조,의료비 지원 등\n\n2. 경찰수사\n피해자 진술조사 증거확보,가까운 해바라기를 통한 수사지원(피해자 진술조사, 영상진술 녹화, 증거채취 등)\n\n3. 검찰조사\n피해자 및 피의자 조사 기소여부 판단,영상진술 녹화,신뢰관계인 동석\n\n4. 법원재판\n가해자 처벌 피해자 보호 조치,법정동행,신변보호 위해 비공개 심리재판 청구',
+				'photo':{
+					'url':'https://www.women1366.kr/_sub03/img/img0301_09.jpg',
+					'width':862,
+					'height':680
+}
+},
+			'keyboard':{
+				'type':'buttons',
+				'buttons':['가정폭력 피해자 지원정책','성폭력 피해자 지원정책','성매매 피해자 지원정책','처음으로']
+}
+			
+})
+	if content=='성매매 피해자 지원정책':
+		data=prostitution_support()
+		return JsonResponse({
+			'message':{
+				'text':'*해외에서 성매매피해를 경험한 경우에도 긴급전화상담서비스를 이용할 수 있습니다.\n해외성매매피해자 지원을 위해 일본, 호주 등 14개국을 대상으로 UIFN서비스를 실시합니다. UIFN은 해외에 있는 성매매피해여성들이 긴급한 도움이 필요할 경우 수신자 부담으로 이용할 수 있는 국제전화이며, 이용방법은 다음과 같습니다.\n*국제전화 이용방법\n국가접속번호 + 800 + 1366 1366\n\n'+data,
+				'photo':{
+					'url':'https://www.women1366.kr/_sub03/img/img0303_01.jpg',
+					'width':862,
+					'height':745
+}
+},
+			'keyboard':{
+				'type':'buttons',
+				'buttons':['가정폭력 피해자 지원정책','성폭력 피해자 지원정책','성매매 피해자 지원정책','처음으로']
+}
+			
+})
 
 	if content=='신고 및 긴급상담 번호':
 		return JsonResponse({
@@ -36,7 +98,12 @@ def message(request):
 	if content=='가정폭력':
 		return JsonResponse({
 			'message':{
-				'text':'1.가정폭력피해 상담소\n2.가정폭력 관련 법 및 가해자 처벌법\n3.관련 판례\n*원하는 항목을 선택해주세요.'
+				'text':'1.가정폭력피해 상담소\n2.가정폭력 관련 법 및 가해자 처벌법\n3.관련 판례\n*원하는 항목을 선택해주세요.',
+				'photo':{
+					'url':'https://www.women1366.kr/_sub03/img/img0301_02.jpg',
+					'width':890,
+					'height':690
+}
 },
 			'keyboard':{
 		'type':'buttons',
@@ -44,9 +111,10 @@ def message(request):
 }
 })
 	if content=='가정폭력 관련 판례':
+		data=panre_crawler('가정폭력')
 		return JsonResponse({
 			'message':{
-				'text':'*가정폭력 관련 판례 및 판례요지\nhttp://glaw.scourt.go.kr/wsjo/panre/sjo050.do#1535859362457\n',
+				'text':data,
 },
 			'keyboard':{
 		'type':'buttons',
@@ -56,7 +124,7 @@ def message(request):
 	if content=='가정폭력 관련 법 및 가해자 처벌법':
 		return JsonResponse({
 			'message':{
-				'text':'*가정폭력범죄의 처벌 등에 관한 특례법\nhttp://glaw.scourt.go.kr/wsjo/lawod/sjo190.do?contId=2241738&q=%EA%B0%80%EC%A0%95%ED%8F%AD%EB%A0%A5&nq=&w=lawod&section=lawod_nm&subw=&subsection=&subId=1&csq=&groups=2,3&category=&outmax=1&msort=&onlycount=&sp=&d1=&d2=&d3=&d4=&d5=&pg=1&p1=&p2=&p3=&p4=02&p5=&p6=&p7=&p8=&p9=&p10=&p11=&p12=&sysCd=&tabGbnCd=&saNo=&joNo=&lawNm=&hanjaYn=N&userSrchHistNo=&poption=&srch=&range=&daewbyn=N&smpryn=N&tabId=&save=Y&bubNm=#1535855031531\n\n*가정폭력방지 및 피해자보호 등에 관한 법률\nhttp://glaw.scourt.go.kr/wsjo/lawod/sjo190.do?contId=2248632&q=%EA%B0%80%EC%A0%95%ED%8F%AD%EB%A0%A5&nq=&w=lawod&section=lawod_nm&subw=&subsection=&subId=1&csq=&groups=2,3&category=&outmax=1&msort=&onlycount=&sp=&d1=&d2=&d3=&d4=&d5=&pg=2&p1=&p2=&p3=&p4=02&p5=&p6=&p7=&p8=&p9=&p10=&p11=&p12=&sysCd=&tabGbnCd=&saNo=&joNo=&lawNm=&hanjaYn=N&userSrchHistNo=&poption=&srch=&range=&daewbyn=N&smpryn=N&tabId=&save=Y&bubNm=#1535857723854\n\n',
+				'text':'*가정폭력범죄의 처벌 등에 관한 특례법\nhttp://glaw.scourt.go.kr/wsjo/lawod/sjo190.do?contId=2241738&q=가정폭력\n\n*가정폭력방지 및 피해자보호 등에 관한 법률\nhttp://glaw.scourt.go.kr/wsjo/lawod/sjo190.do?contId=2248632&q=가정폭력\n\n',
 },
 			'keyboard':{
 		'type':'buttons',
@@ -90,7 +158,12 @@ def message(request):
 	if content=='성폭력':
 		return JsonResponse({
 			'message':{
-				'text':'1.성폭력피해 상담소\n2.성폭력 관련 법 및 가해자 처벌법\n3.관련 판례\n *원하는 항목을 선택해주세요.'
+				'text':'1.성폭력피해 상담소\n2.성폭력 관련 법 및 가해자 처벌법\n3.관련 판례\n *원하는 항목을 선택해주세요.',
+				'photo':{
+					'url':'https://www.women1366.kr/_sub03/img/img0301_05.jpg',
+					'width':862,
+					'height':256
+}
 },
 			'keyboard':{
 		'type':'buttons',
@@ -98,9 +171,10 @@ def message(request):
 }
 })
 	if content=='성폭력 관련 판례':
+		data=panre_crawler('성폭력')
 		return JsonResponse({
 			'message':{
-				'text':'*성폭력 관련 판례 및 판례요지\nhttp://glaw.scourt.go.kr/wsjo/panre/sjo050.do#1535859131277\n'
+				'text':data
 },
 			'keyboard':{
 		'type':'buttons',
@@ -111,7 +185,7 @@ def message(request):
 	if content=='성폭력 관련 법 및 가해자 처벌법':
 		return JsonResponse({
 			'message':{
-				'text':'*성폭력방지 및 피해자보호 등에 관한 법률\nhttp://glaw.scourt.go.kr/wsjo/lawod/sjo190.do?contId=2248949&q=%EC%84%B1%ED%8F%AD%EB%A0%A5&nq=&w=lawod&section=lawod_nm&subw=&subsection=&subId=1&csq=&groups=2,3&category=&outmax=1&msort=&onlycount=&sp=&d1=&d2=&d3=&d4=&d5=&pg=1&p1=&p2=&p3=&p4=02&p5=&p6=&p7=&p8=&p9=&p10=&p11=&p12=&sysCd=&tabGbnCd=&saNo=&joNo=&lawNm=&hanjaYn=N&userSrchHistNo=&poption=&srch=&range=&daewbyn=N&smpryn=N&tabId=&save=Y&bubNm=#1535858070520\n\n'
+				'text':'*성폭력방지 및 피해자보호 등에 관한 법률\nhttp://glaw.scourt.go.kr/wsjo/lawod/sjo190.do?contId=2248949&q=성폭력\n\n'
 },
 			'keyboard':{
 		'type':'buttons',
@@ -189,7 +263,7 @@ def message(request):
 },
 			'keyboard':{
 		 'type': 'buttons',
-                 'buttons': ['가정폭력', '성폭력', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호']
+                 'buttons': ['가정폭력', '성폭력','여성폭력 피해자 지원정책', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호']
 
 }
 })
