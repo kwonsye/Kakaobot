@@ -4,9 +4,10 @@ import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE","bot.settings")
 import django
 django.setup()
+from kakaobot.models import DomesticClinic
 
 def parse_domestic():	
-	req=requests.get('https://www.women1366.kr/_sub03/sub03_02b.html')
+	req=requests.get('https://www.women1366.kr/_sub03/sub03_02c.html')
 	html=req.text
 	soup=BeautifulSoup(html,'html.parser')
 	places=soup.select('table > tbody > tr')
@@ -18,9 +19,12 @@ def parse_domestic():
 		placeAddress=aboutPlace[1].text
 		placePhone=aboutPlace[2].text
 		data+=('*'+placeName+'\n'+placeAddress+'\n'+placePhone+'\n')
+#DomesticClinic(name=placeName,location=placeAddress,phone=placePhone).save()
 
+	
 	return data	
 
 if __name__=='__main__':
 	result=parse_domestic()
-  	print(result)
+	print(result)
+	
