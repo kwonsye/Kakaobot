@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 def send_email():
 	#msg=MIMEMultipart('alternative')
 	naver_user = 'kwonsye@naver.com'
-	naver_password = 'pk2vqp'
+	naver_password = '****'
  
 	sent_from = naver_user
 	to = 'kwonsye@naver.com'
