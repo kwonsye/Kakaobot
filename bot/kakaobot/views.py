@@ -9,11 +9,12 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE","bot.settings")
 from .parser import *
 from .models import Message
 from random import *
+from .emailtest import *
 
 def keyboard(request):
 	return JsonResponse({
 		'type':'buttons',
-		'buttons':['가정폭력','성폭력','여성폭력 피해자 지원정책','피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호']
+		'buttons':['가정폭력','성폭력','여성폭력 피해자 지원정책','피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호','개발자에게 버그신고']
 })
 
 @csrf_exempt
@@ -21,8 +22,25 @@ def message(request):
 	message=((request.body).decode('utf-8'))
 	received_json_data=json.loads(message)
 	content=received_json_data['content']
+
+	if content=='개발자에게 버그신고':
+		result=send_email()
+		if result==True:
+			msg='개발자에게 이메일을 보냈습니다.'
+		elif result==False:
+			msg=='오류가 생겨 이메일을 보내지 못했습니다.\n잠시후 다시 시도해주세요.'
+		return JsonResponse({
+			'message':{
+				'text':msg
+},
+			'keyboard':{
+			'type':'buttons',
+			'buttons':['가정폭력','성폭력','여성폭력 피해자 지원정책','피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호','개발자에게 버그신고']
+
+}
+})
 	
-	if content=='여성폭력 피해자 지원정책':
+	elif content=='여성폭력 피해자 지원정책':
 		return JsonResponse({
 			'message':{
 				'text':'1.가정폭력 피해자 지원정책\n2.성폭력 피해자 지원정책\n3.성매매 피해자 지원정책\n*원하는 항목을 선택하세요.'
@@ -33,7 +51,7 @@ def message(request):
 }
 			
 })
-	if content=='가정폭력 피해자 지원정책':
+	elif content=='가정폭력 피해자 지원정책':
 		data=domestic_support()
 		return JsonResponse({
 			'message':{
@@ -50,7 +68,7 @@ def message(request):
 }
 			
 })
-	if content=='성폭력 피해자 지원정책':
+	elif content=='성폭력 피해자 지원정책':
 		return JsonResponse({
 			'message':{
 				'text':'*성폭력 발생 시 가장 중요한 일은 경찰에 신고 하는 것입니다.\n신고와 동시에 피해자에 대한 보호 조치가 시작됩니다.\n\n1. 전문기관에 상담 및 신고상담\n1366, 신고 112, 성폭력피해상담소,피해자를 위한 변호사 지정 및 상담,무료법률구조,의료비 지원 등\n\n2. 경찰수사\n피해자 진술조사 증거확보,가까운 해바라기를 통한 수사지원(피해자 진술조사, 영상진술 녹화, 증거채취 등)\n\n3. 검찰조사\n피해자 및 피의자 조사 기소여부 판단,영상진술 녹화,신뢰관계인 동석\n\n4. 법원재판\n가해자 처벌 피해자 보호 조치,법정동행,신변보호 위해 비공개 심리재판 청구',
@@ -66,7 +84,7 @@ def message(request):
 }
 			
 })
-	if content=='성매매 피해자 지원정책':
+	elif content=='성매매 피해자 지원정책':
 		data=prostitution_support()
 		return JsonResponse({
 			'message':{
@@ -84,18 +102,18 @@ def message(request):
 			
 })
 
-	if content=='신고 및 긴급상담 번호':
+	elif content=='신고 및 긴급상담 번호':
 		return JsonResponse({
 			'message':{
 				'text':'경찰 112\n여성긴급전화(24시간 무료 운영) 국번없이 1366\n다누리콜센터(이주여성) 1577-1366\n한국가정법률상담소 1644-7077\n대한법률구조공단 국번없이 132\n한국성폭력상담소 02-338-5801~2\n한국여성민우회 02-335-1858\n한국여성의전화 02-2263-6465\n여성대상폭력범죄(성폭력/가정폭력/데이트폭력/불법촬영/스토킹/2차피해)사이버신고 http://onetouch.police.go.kr/ \n\n긴급카카오톡 사이버상담 https://pf.kakao.com/_wVVjxl#none'
 },
 			 'keyboard': {
                 'type': 'buttons',
-                'buttons': ['가정폭력', '성폭력', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호']
+                'buttons': ['가정폭력', '성폭력','여성폭력 피해자 지원정책', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호','개발자에게 버그신고']
             }
 })
 
-	if content=='가정폭력':
+	elif content=='가정폭력':
 		return JsonResponse({
 			'message':{
 				'text':'1.가정폭력피해 상담소\n2.가정폭력 관련 법 및 가해자 처벌법\n3.관련 판례\n*원하는 항목을 선택해주세요.',
@@ -110,7 +128,7 @@ def message(request):
 		'buttons':['가정폭력피해 상담소','가정폭력 관련 법 및 가해자 처벌법','가정폭력 관련 판례','처음으로']
 }
 })
-	if content=='가정폭력 관련 판례':
+	elif content=='가정폭력 관련 판례':
 		data=panre_crawler('가정폭력')
 		return JsonResponse({
 			'message':{
@@ -121,7 +139,7 @@ def message(request):
 		'buttons':['가정폭력피해 상담소','가정폭력 관련 법 및 가해자 처벌법','가정폭력 관련 판례','처음으로']
 }
 })
-	if content=='가정폭력 관련 법 및 가해자 처벌법':
+	elif content=='가정폭력 관련 법 및 가해자 처벌법':
 		return JsonResponse({
 			'message':{
 				'text':'*가정폭력범죄의 처벌 등에 관한 특례법\nhttp://glaw.scourt.go.kr/wsjo/lawod/sjo190.do?contId=2241738&q=가정폭력\n\n*가정폭력방지 및 피해자보호 등에 관한 법률\nhttp://glaw.scourt.go.kr/wsjo/lawod/sjo190.do?contId=2248632&q=가정폭력\n\n',
@@ -132,7 +150,7 @@ def message(request):
 }
 })
 
-	if content=='가정폭력피해 상담소':
+	elif content=='가정폭력피해 상담소':
 		
 		return JsonResponse({
 			'message':{
@@ -144,7 +162,7 @@ def message(request):
 
 })
 
-	if content.startswith('가정폭력_'):
+	elif content.startswith('가정폭력_'):
 		area=content[5:]
 		return_str=parse_domestic(area)
 		return JsonResponse({
@@ -155,7 +173,7 @@ def message(request):
                 'buttons':['가정폭력피해 상담소','가정폭력 관련 법 및 가해자 처벌법','가정폭력 관련 판례','처음으로']
 }
 })
-	if content=='성폭력':
+	elif content=='성폭력':
 		return JsonResponse({
 			'message':{
 				'text':'1.성폭력피해 상담소\n2.성폭력 관련 법 및 가해자 처벌법\n3.관련 판례\n *원하는 항목을 선택해주세요.',
@@ -170,7 +188,7 @@ def message(request):
 		'buttons':['성폭력피해 상담소','성폭력 관련 법 및 가해자 처벌법','성폭력 관련 판례','처음으로']
 }
 })
-	if content=='성폭력 관련 판례':
+	elif content=='성폭력 관련 판례':
 		data=panre_crawler('성폭력')
 		return JsonResponse({
 			'message':{
@@ -182,7 +200,7 @@ def message(request):
 }
 })
 
-	if content=='성폭력 관련 법 및 가해자 처벌법':
+	elif content=='성폭력 관련 법 및 가해자 처벌법':
 		return JsonResponse({
 			'message':{
 				'text':'*성폭력방지 및 피해자보호 등에 관한 법률\nhttp://glaw.scourt.go.kr/wsjo/lawod/sjo190.do?contId=2248949&q=성폭력\n\n'
@@ -193,7 +211,7 @@ def message(request):
 }
 })
 
-	if content=='성폭력피해 상담소':
+	elif content=='성폭력피해 상담소':
 		
 		return JsonResponse({
 			'message':{
@@ -205,7 +223,7 @@ def message(request):
 
 })
 
-	if content.startswith('성폭력_'):
+	elif content.startswith('성폭력_'):
 		area=content[4:]
 		return_str=parse_sex(area)
 		return JsonResponse({
@@ -216,7 +234,7 @@ def message(request):
                 'buttons':['성폭력피해 상담소','성폭력 관련 법 및 가해자 처벌법','성폭력 관련 판례','처음으로']
 }
 })
-	if content=='피해자분들에게 전하고 싶은 따뜻한 한 마디':
+	elif content=='피해자분들에게 전하고 싶은 따뜻한 한 마디':
 	
 		return JsonResponse({
 			'message':{
@@ -227,7 +245,7 @@ def message(request):
 }
 
 })
-	if content.startswith('피해자분들께_'):
+	elif content.startswith('피해자분들께_'):
 		result=send_message(content)
 		if result==True:
 			return JsonResponse({
@@ -236,13 +254,13 @@ def message(request):
 },			
 				 'keyboard': {
                 			'type': 'buttons',
-                			'buttons': ['가정폭력', '성폭력', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호']
+                			'buttons': ['가정폭력', '성폭력','여성폭력 피해자 지원정책', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호','개발자에게 버그신고']
             }
 
 
 })
 
-	if content=='당신에게 드리는 따뜻한 한 마디':
+	elif content=='당신에게 드리는 따뜻한 한 마디':
 		result=receive_message()
 		return JsonResponse({
 			'message':{
@@ -250,23 +268,35 @@ def message(request):
 },			
 				 'keyboard': {
                 			'type': 'buttons',
-                			'buttons': ['가정폭력', '성폭력', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호']
+                			'buttons': ['가정폭력', '성폭력','여성폭력 피해자 지원정책', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호','개발자에게 버그신고']
             }
 
 
 })
 	
-	if content=='처음으로':
+	elif content=='처음으로':
 		return JsonResponse({
 			'message':{
 				'text':'초기 항목입니다.'
 },
 			'keyboard':{
 		 'type': 'buttons',
-                 'buttons': ['가정폭력', '성폭력','여성폭력 피해자 지원정책', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호']
+                 'buttons': ['가정폭력', '성폭력','여성폭력 피해자 지원정책', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호','개발자에게 버그신고']
 
 }
 })
+
+	else:
+		return JsonResponse({
+			'message':{
+				'text':'입력형식에 맞게 입력해주세요!'
+				},
+			'keyboard':{
+				'type': 'buttons',
+				'buttons': ['가정폭력', '성폭력','여성폭력 피해자 지원정책', '피해자분들에게 전하고 싶은 따뜻한 한 마디','당신에게 드리는 따뜻한 한 마디','신고 및 긴급상담 번호','개발자에게 버그신고']
+
+				}				
+		})
 
 def send_message(message):
 	result_message=message[7:]
