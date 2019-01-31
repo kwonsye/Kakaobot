@@ -1,5 +1,9 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 import requests
+
 from bs4 import BeautifulSoup
+
 #import os
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE","bot.settings")
 #import django
@@ -43,12 +47,12 @@ def panre_crawler(input_search):
 	#panre_dict=OrederDict()
 	
 	data=''
-	for page in range(1,5):
+	for page in range(1,3):
 		params={
 			'q':input_search,
 			'p':page,
 		}
-		req=requests.get(url,params=params)
+		req=requests.get(url,params=params,timeout=100)
 		html=req.text
 		soup=BeautifulSoup(html,'html.parser')
 		title_list=soup.select('.casename')
@@ -266,6 +270,6 @@ def parse_sex(area):
 		
 
 if __name__=='__main__':
-	result=parse_sex('제주')
+	result=panre_crawler('성폭력')
 	print(result)
 #	parse_domestic()
