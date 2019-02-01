@@ -8,7 +8,7 @@ import smtplib, os, json
 from email.mime.text import MIMEText
 from django.core.exceptions import ImproperlyConfigured
 
-secret_file = "../secrets.json"
+secret_file = "/home/ubuntu/Django/bot/secrets.json"
 
 with open(secret_file) as f:
     secrets = json.loads(f.read())
